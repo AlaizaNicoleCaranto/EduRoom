@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Manage Rooms{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-building-gear text-success me-2"></i>Manage Rooms</h2>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add Room Form -->
+        <div class="col-lg-4">
+            <div class="dashboard-card">
+                <h4 class="mb-4"><i class="bi bi-plus-circle text-primary me-2"></i>Add New Room</h4>
+                <form method="POST" action="/admin/add_room">
+                    <div class="mb-3">
+                        <label class="form-label">Room ID</label>
+                        <input type="text" name="room_id" class="form-control" placeholder="e.g., R404" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Room Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g., Advanced Lab" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Capacity</label>
+                        <input type="number" name="capacity" class="form-control" min="1" max="200" value="30" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tags (comma separated)</label>
+                        <input type="text" name="tags" class="form-control" placeholder="lab, computer, projector">
+                        <small class="text-muted">Optional: Helps with room categorization</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Features (comma separated)</label>
+                        <input type="text" name="features" class="form-control" placeholder="projector, whiteboard, computers">
+                        <small class="text-muted">Optional: Useful for matching requests</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Zone / Location</label>
+                        <input type="text" name="zone" class="form-control" placeholder="2nd Floor / North Wing">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="maintenance" class="form-check-input" id="maintenanceCheck">
+                        <label class="form-check-label" for="maintenanceCheck">Under maintenance (block booking)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Add Room
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Room Statistics -->
+        <div class="col-lg-8">
+            <div class="dashboard-card">
+                <h4 class="mb-4"><i class="bi bi-bar-chart text-info me-2"></i>Room Statistics</h4>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <div class="display-4 fw-bold text-primary">{{ total_rooms }}</div>
+                            <small class="text-muted">Total Rooms</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                        <div class="display-4 fw-bold text-success">
+                            {% set available = rooms|selectattr('today_bookings','equalto',0)|selectattr('maintenance','equalto',False)|list|length %}
+                            {{ available }}
+                        </div>
+                            <small class="text-muted">Available Today</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <div class="display-4 fw-bold text-warning">
+                                {{ rooms|map(attribute='total_requests')|sum }}
+                            </div>
+                            <small class="text-muted">Total Requests</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rooms List -->
+            <div class="dashboard-card mt-4">
+                <h5 class="mb-3">All Rooms</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Room ID</th>
+                                <th>Name</th>
+                                <th>Capacity</th>
+                                <th>Today's Bookings</th>
+                                <th>Total Requests</th>
+                                <th>Features / Zone</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for room in rooms %}
+                            <tr>
+                                <td><strong>{{ room.room_id }}</strong></td>
+                                <td>{{ room.name }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ room.capacity }}</span>
+                                </td>
+                                <td>
+                                    {% if room.today_bookings > 0 %}
+                                    <span class="badge bg-warning">{{ room.today_bookings }} booked</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Available</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ room.total_requests }}</td>
+                                <td>
+                                    <div class="small text-muted">
+                                        {% if room.features %}{{ room.features|join(', ') }}{% else %}<span class="text-muted">-</span>{% endif %}
+                                    </div>
+                                    <div class="small text-muted">{{ room.zone or '-' }}</div>
+                                </td>
+                                <td>
+                                    {% if room.maintenance %}
+                                        <span class="badge bg-danger">Maintenance</span>
+                                    {% elif room.today_bookings > 0 %}
+                                        <span class="badge bg-warning">Busy</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Free</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/admin/edit_room/{{ room.room_id }}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                                    <form method="POST" action="/admin/delete_room/{{ room.room_id }}" style="display:inline" onsubmit="return confirm('Delete room {{ room.room_id }}? This cannot be undone.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

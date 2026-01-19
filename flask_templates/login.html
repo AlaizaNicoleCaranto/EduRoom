@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% block title %}Login - {{ selected_role|title }}{% endblock %}
+{% block content %}
+<div class="fullpage-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-lg" style="border-radius: 25px; overflow: hidden;">
+                    <div class="row g-0">
+                        <!-- Left Side - Branding -->
+                        <div class="col-lg-6 d-none d-lg-block">
+                            <div class="h-100 d-flex flex-column justify-content-center p-3 text-white" style="background: linear-gradient(135deg, var(--primary-color) 0%, #8e44ad 100%);">
+                                <div class="text-center mb-5">
+                                    <div class="d-inline-block p-4 rounded-circle bg-white bg-opacity-10 mb-4">
+                                        <i class="bi bi-building display-3"></i>
+                                    </div>
+                                    <h1 class="display-6 fw-bold mb-2">Welcome Back!</h1>
+                                    <p class="opacity-75 small">Sign in to access the EduRoom system</p>
+                                </div>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="me-3">
+                                            <i class="bi bi-check-circle-fill fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Smart Room Management</h6>
+                                            <p class="small opacity-75 mb-0">Efficient allocation and scheduling</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="me-3">
+                                            <i class="bi bi-check-circle-fill fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Real-time Availability</h6>
+                                            <p class="small opacity-75 mb-0">Instant room status updates</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="bi bi-check-circle-fill fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Easy Request System</h6>
+                                            <p class="small opacity-75 mb-0">Simple and fast room booking</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Side - Login Form -->
+                        <div class="col-lg-6">
+                            <div class="p-3 p-lg-4">
+                                <!-- Header -->
+                                <div class="text-center mb-5">
+                                    <div class="avatar-circle bg-{% if selected_role == 'student' %}success{% elif selected_role == 'teacher' %}primary{% else %}danger{% endif %} mx-auto mb-2" style="width: 72px; height: 72px;">
+                                        <i class="bi bi-{% if selected_role == 'student' %}person{% elif selected_role == 'teacher' %}person-workspace{% else %}shield-lock{% endif %} text-white fs-2"></i>
+                                    </div>
+                                    <h2 class="fw-bold mb-1">Login as {{ selected_role|title }}</h2>
+                                    <div class="badge bg-{% if selected_role == 'student' %}success{% elif selected_role == 'teacher' %}primary{% else %}danger{% endif %} text-white px-3 py-2 rounded-pill mb-3">
+                                        {{ selected_role|title }} Mode
+                                    </div>
+                                    <p class="text-muted">Enter your credentials to continue</p>
+                                </div>
+                                
+                                <!-- Login Form -->
+                                <form method="POST" action="/login" class="mt-4">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark mb-2">
+                                            <i class="bi bi-person-badge me-2"></i>
+                                            School ID
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light border-end-0">
+                                                <i class="bi bi-person-fill text-muted"></i>
+                                            </span>
+                                            <input type="text" name="school_id" class="form-control border-start-0 ps-0" 
+                                                   placeholder="Enter your School ID" required autofocus>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark mb-2">
+                                            <i class="bi bi-lock me-2"></i>
+                                            Password
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light border-end-0">
+                                                <i class="bi bi-key-fill text-muted"></i>
+                                            </span>
+                                            <input type="password" name="password" class="form-control border-start-0 ps-0" 
+                                                   placeholder="Enter your password" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-{% if selected_role == 'student' %}success{% elif selected_role == 'teacher' %}primary{% else %}danger{% endif %} btn-lg w-100 py-2 fw-bold shadow-sm mb-3">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                                        Sign In as {{ selected_role|title }}
+                                    </button>
+                                    
+                                    <div class="text-center mb-4">
+                                        <a href="/select-role" class="text-decoration-none d-inline-flex align-items-center">
+                                            <i class="bi bi-arrow-left me-2"></i>
+                                            <span>Choose different role</span>
+                                        </a>
+                                    </div>
+                                    
+                                    <!-- Demo Credentials -->
+                                    <div class="card border-info bg-light">
+                                        <div class="card-body p-2">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="bi bi-info-circle-fill text-info fs-5 me-2"></i>
+                                                <h6 class="card-title text-info mb-0">Demo Credentials</h6>
+                                            </div>
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <div class="p-1 bg-white rounded">
+                                                        <small class="text-muted d-block">ID</small>
+                                                        <strong class="text-dark small">
+                                                            {% if selected_role == "student" %}
+                                                                2024-00244-cl-1
+                                                            {% elif selected_role == "teacher" %}
+                                                                2024-00245-tc-1
+                                                            {% elif selected_role == "admin" %}
+                                                                2024-00001-ad-1
+                                                            {% endif %}
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="p-1 bg-white rounded">
+                                                        <small class="text-muted d-block">Password</small>
+                                                        <strong class="text-dark small">
+                                                            {% if selected_role == "student" %}
+                                                                studpass
+                                                            {% elif selected_role == "teacher" %}
+                                                                teachpass
+                                                            {% elif selected_role == "admin" %}
+                                                                adminpass
+                                                            {% endif %}
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-4">
+            <p class="text-white opacity-50 small">
+                <i class="bi bi-shield-check me-1"></i>
+                Secure login powered by Flask Authentication
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+    
+    .input-group-lg .input-group-text,
+    .input-group-lg .form-control {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.95rem;
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+    }
+    
+    .form-control:focus {
+        box-shadow: none;
+        border-color: var(--primary-color);
+    }
+    
+    .btn-lg {
+        padding: 0.55rem 0.9rem;
+        font-size: 0.95rem;
+        border-radius: 10px;
+    }
+    
+    /* Allow scrollbar when needed for small screens */
+    
+    /* Smooth animations */
+    .card {
+        animation: slideInRight 0.6s ease-out;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+
+    <script>
+    // Add focus effects to form inputs without blocking scrolling
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('border-primary', 'shadow-sm');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('border-primary', 'shadow-sm');
+            });
+        });
+    });
+    </script>
+
+    <style>
+        /* If viewport is short, hide left branding column to reduce height */
+        @media (max-height: 820px) {
+            .col-lg-6.d-none.d-lg-block { display: none !important; }
+            .col-lg-6 { flex: 0 0 100%; max-width: 100%; }
+            .card { border-radius: 12px; }
+        }
+    </style>
+{% endblock %}

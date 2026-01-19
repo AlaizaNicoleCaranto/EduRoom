@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Approve Requests{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-check text-warning me-2"></i>Pending Approvals</h2>
+        <div>
+            <span class="badge bg-warning text-dark me-3">
+                {{ total_pending }} Pending
+            </span>
+            <a href="/admin/dashboard" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    {% if total_pending == 0 %}
+    <div class="dashboard-card text-center py-5">
+        <i class="bi bi-check-all display-1 text-success mb-3"></i>
+        <h3 class="text-success">All Caught Up! 🎉</h3>
+        <p class="text-muted">No Pending Requests to Review at the Moment.</p>
+        <a href="/admin/dashboard" class="btn btn-success mt-3">
+            <i class="bi bi-speedometer2 me-2"></i>
+            Back to Dashboard
+        </a>
+    </div>
+    {% else %}
+    <div class="dashboard-card">
+        <h4 class="mb-4">Review Room Requests</h4>
+        <p class="text-muted">Approve or Reject Room Usage Requests from students and teachers.</p>
+        
+        <div class="row g-4">
+            {% for req in requests %}
+            <div class="col-md-6">
+                <div class="card h-100 border-{% if req.status == 'Pending' %}warning{% elif req.status == 'Accepted' %}success{% else %}danger{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-center 
+                        {% if req.status == 'Pending' %}bg-warning{% elif req.status == 'Accepted' %}bg-success{% else %}bg-danger{% endif %} text-white">
+                        <div>
+                            <h5 class="mb-0">Request #{{ req.request_id }}</h5>
+                            <small class="d-block">{{ req.user_name }}</small>
+                        </div>
+                        <span class="badge bg-light text-dark">
+                            {{ req.user_id|replace('S', 'Student ') if 'S' in req.user_id else req.user_id|replace('T', 'Teacher ') }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Room</small>
+                                <strong>{{ req.room_id }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Date</small>
+                                <strong>{{ req.formatted_date }}</strong>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Time</small>
+                                <strong>{{ req.formatted_start }} - {{ req.formatted_end }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Status</small>
+                                <span class="badge bg-{{ req.status_color }}">{{ req.status }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Purpose</small>
+                            <div class="alert alert-light">{{ req.purpose }}</div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        {% if req.status == "Pending" %}
+                        <div class="d-flex justify-content-between">
+                            <form method="POST" action="/admin/reject/{{ req.request_id }}" class="flex-grow-1 me-2">
+                                <div class="input-group">
+                                    <input type="text" name="reason" class="form-control form-control-sm" 
+                                           placeholder="Rejection reason" required>
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-x-circle"></i> Reject
+                                    </button>
+                                </div>
+                            </form>
+                            <a href="/admin/approve/{{ req.request_id }}" 
+                               class="btn btn-sm btn-success"
+                               onclick="return confirm('Approve this request?')">
+                                <i class="bi bi-check-circle"></i> Approve
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Already {{ req.status|lower }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Request Room{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar-plus text-danger me-2"></i>Request a Room</h2>
+        <a href="/student/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4 align-items-stretch">
+        <!-- Request Form -->
+        <div class="col-lg-6">
+            <div class="dashboard-card">
+                <h4 class="mb-4">New Room Request</h4>
+                <form method="POST" action="/student/request">
+                    <div class="mb-3">
+                        <label class="form-label">Select Room</label>
+                        <select name="room_id" class="form-control" required>
+                            <option value="">Choose a room...</option>
+                            {% for room in rooms %}
+                            <option value="{{ room.room_id }}">
+                                {{ room.room_id }} - {{ room.name }} (Capacity: {{ room.capacity }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Usage Date</label>
+                            <input type="date" name="usage_date" class="form-control" 
+                                   min="{{ today_date }}" value="{{ today_date }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Time Slot</label>
+                            <div class="input-group">
+                                <input type="time" name="start_time" class="form-control" value="13:00" required>
+                                <span class="input-group-text">to</span>
+                                <input type="time" name="end_time" class="form-control" value="14:00" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Purpose</label>
+                        <textarea name="purpose" class="form-control" rows="3" 
+                                  placeholder="Describe what you'll use the room for..." required></textarea>
+                        <small class="text-muted">Be specific to increase approval chances!</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="bi bi-send me-2"></i>
+                        Submit Request
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- My Requests -->
+        <div class="col-lg-6 d-flex flex-column">
+            <div class="dashboard-card">
+                <h4 class="mb-4">My Room Requests</h4>
+                
+                {% if requests and requests|length > 0 %}
+                <div class="list-group">
+                    {% for req in requests %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ req.room_id }}</h6>
+                            <span class="badge bg-{{ req.status_color }}">
+                                {{ req.status }}
+                            </span>
+                        </div>
+                        <p class="mb-1">{{ req.purpose }}</p>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar me-1"></i>{{ req.formatted_date }} •
+                            <i class="bi bi-clock ms-2 me-1"></i>{{ req.formatted_start }} - {{ req.formatted_end }}
+                        </small>
+                        {% if req.rejection_reason %}
+                        <div class="alert alert-danger mt-2 mb-0 py-1 small">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            <strong>Rejected:</strong> {{ req.rejection_reason }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-3 text-center">
+                    <small class="text-muted">
+                        Showing {{ requests|length }} request{{ 's' if requests|length != 1 }}
+                    </small>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                    <h5 class="text-muted">No Requests Yet</h5>
+                    <p class="text-muted">Submit your first room request using the form!</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Tips Card -->
+            <div class="dashboard-card mt-3">
+                <h5><i class="bi bi-lightbulb text-warning me-2"></i>Request Tips</h5>
+                <ul class="mt-3 mb-0">
+                    <li>Submit requests at least 24 hours in advance</li>
+                    <li>Be clear about your purpose</li>
+                    <li>Check room availability before requesting</li>
+                    <li>You'll receive email notification when approved</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

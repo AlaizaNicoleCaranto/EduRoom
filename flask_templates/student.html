@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome Student {{ name }}</h2>
+
+<!-- Weekly Class Schedule -->
+<h4>Weekly Class Schedule</h4>
+<table class="table table-bordered mb-4">
+  <thead>
+    <tr><th>Course</th><th>Room</th><th>Date</th><th>Time</th></tr>
+  </thead>
+  <tbody>
+    {% for c in classes %}
+    <tr>
+      <td>{{ c.course_code }}</td>
+      <td>{{ c.room_id }}</td>
+      <td>{{ c.class_date }}</td>
+      <td>{{ c.start_time }} - {{ c.end_time }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Available Rooms -->
+<h4>Available Rooms</h4>
+<table class="table table-bordered mb-4">
+  <thead>
+    <tr><th>Room ID</th><th>Name</th><th>Capacity</th></tr>
+  </thead>
+  <tbody>
+    {% for room in rooms %}
+    <tr>
+      <td>{{ room.room_id }}</td>
+      <td>{{ room.name }}</td>
+      <td>{{ room.capacity }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Request Room Form -->
+<h4>Request a Room</h4>
+<form method="POST" class="mb-4">
+  <div class="mb-3">
+    <label class="form-label">Room ID</label>
+    <input type="text" name="room_id" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Purpose</label>
+    <input type="text" name="purpose" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit Request</button>
+</form>
+
+<!-- Your Room Requests -->
+<h4>Your Room Requests</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr><th>Request ID</th><th>Room</th><th>Date</th><th>Time</th><th>Purpose</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    {% for req in requests %}
+    <tr>
+      <td>{{ req.request_id }}</td>
+      <td>{{ req.room_id }}</td>
+      <td>{{ req.usage_date }}</td>
+      <td>{{ req.start_time }} - {{ req.end_time }}</td>
+      <td>{{ req.purpose }}</td>
+      <td>{{ req.status }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

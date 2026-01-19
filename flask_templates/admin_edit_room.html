@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Edit Room {{ room.room_id }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-pencil-square text-primary me-2"></i>Edit Room {{ room.room_id }}</h2>
+    <a href="/admin/rooms" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Rooms
+    </a>
+</div>
+
+<div class="dashboard-card">
+    <form method="POST" action="/admin/edit_room/{{ room.room_id }}">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Room ID</label>
+                <input type="text" class="form-control" value="{{ room.room_id }}" disabled>
+            </div>
+            <div class="col-md-8">
+                <label class="form-label">Room Name</label>
+                <input type="text" name="name" class="form-control" value="{{ room.name }}" required>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Capacity</label>
+                <input type="number" name="capacity" class="form-control" min="1" max="500" value="{{ room.capacity }}" required>
+            </div>
+            <div class="col-md-8">
+                <label class="form-label">Zone</label>
+                <input type="text" name="zone" class="form-control" value="{{ room.zone }}" placeholder="e.g., 2nd Floor">
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Tags</label>
+                <input type="text" name="tags" class="form-control" value="{{ room.tags|join(', ') }}" placeholder="comma separated">
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Features</label>
+                <input type="text" name="features" class="form-control" value="{{ room.features|join(', ') }}" placeholder="e.g., projector, whiteboard">
+            </div>
+
+            <div class="col-12 form-check">
+                <input class="form-check-input" type="checkbox" name="maintenance" id="maintenanceCheck" {% if room.maintenance %}checked{% endif %}>
+                <label class="form-check-label" for="maintenanceCheck">Under maintenance (block booking)</label>
+            </div>
+
+            <div class="col-12 text-end mt-3">
+                <a href="/admin/rooms" class="btn btn-outline-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

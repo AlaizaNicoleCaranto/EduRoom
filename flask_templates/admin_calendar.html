@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Calendar View{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar-event text-primary me-2"></i>Calendar View</h2>
+        <div>
+            <span class="badge bg-primary me-3">
+                {{ calendar|length }} Days
+            </span>
+            <a href="/admin/dashboard" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h4 class="mb-4">7-Day Calendar Overview</h4>
+        <p class="text-muted">View Scheduled Classes And Room Requests For The Next Week.</p>
+        
+        <div class="row g-4">
+            {% for date_str, day_data in calendar.items() %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 {% if loop.index == 1 %}border-primary{% endif %}">
+                    <div class="card-header {% if loop.index == 1 %}bg-primary text-white{% else %}bg-light{% endif %}">
+                        <h5 class="mb-0">{{ day_data.day_name }}</h5>
+                        <small>{{ day_data.date_str }}</small>
+                    </div>
+                    <div class="card-body">
+                        <!-- Classes Today -->
+                        <div class="mb-4">
+                            <h6 class="text-primary">
+                                <i class="bi bi-book me-2"></i>
+                                Classes ({{ day_data.classes|length }})
+                            </h6>
+                            {% if day_data.classes %}
+                            <div class="mt-2">
+                                {% for cls in day_data.classes %}
+                                <div class="alert alert-primary py-2 mb-2 small">
+                                    <div class="fw-bold">{{ cls.course }}</div>
+                                    <div>{{ cls.room }} • {{ cls.teacher }}</div>
+                                    <small class="text-muted">{{ cls.time }}</small>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="alert alert-light py-2 text-center">
+                                <small class="text-muted">No Classes Scheduled</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Requests Today -->
+                        <div>
+                            <h6 class="text-warning">
+                                <i class="bi bi-clipboard me-2"></i>
+                                Requests ({{ day_data.requests|length }})
+                            </h6>
+                            {% if day_data.requests %}
+                            <div class="mt-2">
+                                {% for req in day_data.requests %}
+                                <div class="alert alert-{{ 'success' if req.status == 'Accepted' else 'warning' if req.status == 'Pending' else 'danger' }} py-2 mb-2 small">
+                                    <div class="fw-bold">{{ req.purpose[:20] }}{% if req.purpose|length > 20 %}...{% endif %}</div>
+                                    <div>{{ req.room }} • {{ req.user }}</div>
+                                    <small class="text-muted">{{ req.time }}</small>
+                                    <span class="badge bg-{{ 'success' if req.status == 'Accepted' else 'warning' if req.status == 'Pending' else 'danger' }} float-end">
+                                        {{ req.status }}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="alert alert-light py-2 text-center">
+                                <small class="text-muted">No Room Requests</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent text-center">
+                        <small class="text-muted">
+                            <i class="bi bi-clock"></i>
+                            {{ day_data.classes|length + day_data.requests|length }} total events
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

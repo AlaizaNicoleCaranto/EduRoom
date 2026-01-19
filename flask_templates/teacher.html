@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome Teacher {{ name }}</h2>
+
+<!-- My Classes -->
+<h4>My Class Schedule</h4>
+<table class="table table-bordered mb-4">
+  <thead>
+    <tr><th>Course</th><th>Room</th><th>Time</th></tr>
+  </thead>
+  <tbody>
+    {% for c in classes %}
+    <tr>
+      <td>{{ c.course_code }}</td>
+      <td>{{ c.room_id }}</td>
+      <td>{{ c.start_time }} - {{ c.end_time }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Request Room Form -->
+<h4>Request a Room (Consultation)</h4>
+<form method="POST" class="mb-4">
+  <div class="mb-3">
+    <label class="form-label">Room ID</label>
+    <input type="text" name="room_id" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Purpose</label>
+    <input type="text" name="purpose" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-success">Submit Request</button>
+</form>
+
+<!-- My Requests -->
+<h4>My Room Requests</h4>
+<table class="table table-striped">
+  <thead>
+    <tr><th>Room</th><th>Purpose</th><th>Status</th><th>Reason</th></tr>
+  </thead>
+  <tbody>
+    {% for r in requests %}
+    <tr>
+      <td>{{ r.room_id }}</td>
+      <td>{{ r.purpose }}</td>
+      <td>{{ r.status }}</td>
+      <td>{{ r.rejection_reason }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

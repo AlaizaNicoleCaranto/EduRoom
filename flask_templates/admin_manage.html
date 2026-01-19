@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Manage System{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-gear-fill text-warning me-2"></i>System Management</h2>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add Class Form -->
+        <div class="col-lg-6">
+            <div class="dashboard-card">
+                <h4 class="mb-4"><i class="bi bi-calendar-plus text-primary me-2"></i>Add New Class</h4>
+                <form method="POST" action="/admin/add_class">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Course Code</label>
+                            <input type="text" name="course_code" class="form-control" placeholder="e.g., COMP101" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Room ID</label>
+                            <select name="room_id" class="form-control" required>
+                                {% for room in rooms %}
+                                <option value="{{ room.room_id }}">{{ room.room_id }} - {{ room.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teacher ID</label>
+                            <select name="teacher_id" class="form-control" required>
+                                {% for user in users %}
+                                {% if user.role.name == "TEACHER" %}
+                                <option value="{{ user.user_id }}">{{ user.name }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date</label>
+                            <input type="date" name="class_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" name="start_time" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">End Time</label>
+                            <input type="time" name="end_time" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Schedule Class
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add User Form -->
+        <div class="col-lg-6">
+            <div class="dashboard-card">
+                <h4 class="mb-4"><i class="bi bi-person-plus text-success me-2"></i>Add User</h4>
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">User ID</label>
+                            <input type="text" class="form-control" placeholder="e.g., S5">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" placeholder="Full Name">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Role</label>
+                            <select class="form-control">
+                                <option value="STUDENT">Student</option>
+                                <option value="TEACHER">Teacher</option>
+                                <option value="ADMIN">Admin</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="button" class="btn btn-success w-100" disabled>
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Add User (Coming Soon)
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Current Classes -->
+        <div class="col-12">
+            <div class="dashboard-card">
+                <h4 class="mb-4"><i class="bi bi-calendar-check text-info me-2"></i>Scheduled Classes</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Room</th>
+                                <th>Teacher</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cls in classes|reverse %}
+                            <tr>
+                                <td><strong>{{ cls.course_code }}</strong></td>
+                                <td>{{ cls.room_id }}</td>
+                                <td>
+                                    {% for user in users %}
+                                    {% if user.user_id == cls.teacher_id %}
+                                    {{ user.name }}
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ cls.class_date.strftime('%b %d, %Y') }}</td>
+                                <td>{{ cls.start_time.strftime('%I:%M %p') }} - {{ cls.end_time.strftime('%I:%M %p') }}</td>
+                                <td>
+                                    <a href="/admin/cancel_class/{{ cls.schedule_id }}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Cancel this class?')">
+                                        <i class="bi bi-x-circle"></i> Cancel
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
